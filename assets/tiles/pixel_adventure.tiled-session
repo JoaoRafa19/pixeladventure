@@ -9,24 +9,26 @@
     "fileStates": {
         "Level_01.tmx": {
             "expandedObjectLayers": [
-                2
+                2,
+                3
             ],
-            "scale": 1,
-            "selectedLayer": 1,
+            "scale": 1.5,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 290.5,
-                "y": 260.5
+                "x": 382.3333333333333,
+                "y": 282.66666666666663
             }
         },
         "Level_02.tmx": {
             "expandedObjectLayers": [
-                2
+                2,
+                3
             ],
-            "scale": 1.4428125,
-            "selectedLayer": 1,
+            "scale": 1.5,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 320.5544726012562,
-                "y": 184.01559454191027
+                "x": 385,
+                "y": 201.99999999999997
             }
         }
     },

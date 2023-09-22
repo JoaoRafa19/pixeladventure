@@ -1,12 +1,14 @@
 import 'dart:async';
 
+import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
 import 'package:flutter/services.dart';
+import 'package:pixeladventure/components/collision_block.dart';
+import 'package:pixeladventure/components/player_hitbok.dart';
+import 'package:pixeladventure/components/utils.dart';
 import 'package:pixeladventure/pixel_adventure.dart';
 
 enum PlayerState { idle, running, duobleJump, fall, hit, jump, wallJump }
-
-enum PlayerDirection { left, right, none }
 
 class Player extends SpriteAnimationGroupComponent
     with HasGameRef<PixelAdventure>, KeyboardHandler {
@@ -24,71 +26,74 @@ class Player extends SpriteAnimationGroupComponent
   late final SpriteAnimation wallJumpAnimation;
   final double stepTime = 0.05;
 
-  PlayerDirection playerDirection = PlayerDirection.none;
+  PlayerHitbox hitbox = PlayerHitbox(
+    offSetX: 10,
+    offSetY: 4,
+    width: 12,
+    height: 28,
+  );
+
+  final double _gravity = 9.8;
+  final double _jumpForce = 460;
+  final double _terminalVelocity = 250;
+
   double moveSpeed = 100;
+  double horizontalMovement = 0.0;
   Vector2 velocity = Vector2.zero();
-  bool isFacingRight = true;
+  List<CollisionBlock> collisionBlocks = [];
+  bool isOnGround = false;
+  bool hasJumped = false;
 
   @override
   FutureOr<void> onLoad() {
     _loadAllAnimations();
-
+    // debugMode = true;
+    // add(RectangleHitbox(
+    //   position: Vector2(hitbox.offSetX, hitbox.offSetY),
+    //   size: Vector2(hitbox.width, hitbox.height),
+    // ));
     return super.onLoad();
   }
 
   @override
   void update(double dt) {
     _updatePlayerMovement(dt);
+    _updatePlayerState();
+    _checkHorizontalCollisions();
+    _applyGravity(dt);
+    _checkVerticalCollisions();
     super.update(dt);
   }
 
   @override
   bool onKeyEvent(RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    horizontalMovement = 0.0;
+
     final isLeftKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyA) ||
         keysPressed.contains(LogicalKeyboardKey.arrowLeft);
     final isRightKeyPressed = keysPressed.contains(LogicalKeyboardKey.keyD) ||
         keysPressed.contains(LogicalKeyboardKey.arrowRight);
 
-    if (isLeftKeyPressed && isRightKeyPressed) {
-      playerDirection = PlayerDirection.none;
-    } else if (isLeftKeyPressed) {
-      playerDirection = PlayerDirection.left;
-    } else if (isRightKeyPressed) {
-      playerDirection = PlayerDirection.right;
-    } else {
-      playerDirection = PlayerDirection.none;
-    }
+    horizontalMovement += isLeftKeyPressed ? -1 : 0;
+    horizontalMovement += isRightKeyPressed ? 1 : 0;
+
+    hasJumped = keysPressed.contains(LogicalKeyboardKey.space) ||
+        keysPressed.contains(LogicalKeyboardKey.keyW) ||
+        keysPressed.contains(LogicalKeyboardKey.arrowUp);
 
     return super.onKeyEvent(event, keysPressed);
   }
 
   void _updatePlayerMovement(double dt) {
-    double dirX = 0.0;
-    switch (playerDirection) {
-      case PlayerDirection.left:
-        if (isFacingRight) {
-          flipHorizontallyAroundCenter();
-          isFacingRight = false;
-        }
-        current = PlayerState.running;
-        dirX -= moveSpeed;
-        break;
-      case PlayerDirection.right:
-        if (!isFacingRight) {
-          flipHorizontallyAroundCenter();
-          isFacingRight = true;
-        }
-        current = PlayerState.running;
-        dirX += moveSpeed;
-        break;
-      case PlayerDirection.none:
-        current = PlayerState.idle;
-        dirX = 0.0;
-        break;
+    if (hasJumped && isOnGround) {
+      _playerJump(dt);
     }
-    velocity = Vector2(dirX, 0.0);
 
-    position += velocity * dt;
+    // Optional jump if player is not on ground
+    if (velocity.y > 0) isOnGround = false;
+
+    velocity.x = horizontalMovement * moveSpeed;
+    position.x += velocity.x * dt;
   }
 
   void _loadAllAnimations() {
@@ -121,10 +126,90 @@ class Player extends SpriteAnimationGroupComponent
       game.images
           .fromCache('Main Characters/$character/$animation (32x32).png'),
       SpriteAnimationData.sequenced(
-        amount: 7,
+        amount: amount,
         stepTime: stepTime,
         textureSize: Vector2.all(32),
       ),
     );
+  }
+
+  void _updatePlayerState() {
+    PlayerState playerState = PlayerState.idle;
+
+    if (velocity.x < 0 && scale.x > 0) {
+      flipHorizontallyAroundCenter();
+    } else if (velocity.x > 0 && scale.x < 0) {
+      flipHorizontallyAroundCenter();
+    }
+
+    //is running
+    if (velocity.x != 0) playerState = PlayerState.running;
+
+    // check if is jumping
+    if (velocity.y < 0) playerState = PlayerState.jump;
+
+    //check if is falling
+    if (velocity.y > 0) playerState = PlayerState.fall;
+
+    current = playerState;
+  }
+
+  void _checkHorizontalCollisions() {
+    for (final block in collisionBlocks) {
+      if (!block.isPlatform) {
+        if (checkCollision(this, block)) {
+          if (velocity.x > 0) {
+            velocity.x = 0;
+            position.x = block.x - hitbox.offSetX - hitbox.width;
+          }
+          if (velocity.x < 0) {
+            velocity.x = 0;
+            position.x = block.x + block.width + hitbox.width + hitbox.offSetX;
+          }
+        }
+      }
+    }
+  }
+
+  void _applyGravity(double dt) {
+    velocity.y += _gravity;
+    velocity.y.clamp(-_jumpForce, _terminalVelocity);
+    position.y += velocity.y * dt;
+  }
+
+  void _checkVerticalCollisions() {
+    for (final block in collisionBlocks) {
+      if (block.isPlatform) {
+        if (checkCollision(this, block)) {
+          if (velocity.y > 0) {
+            velocity.y = 0;
+            position.y = block.y - hitbox.height - hitbox.offSetY;
+            isOnGround = true;
+            break;
+          }
+        }
+      } else {
+        if (checkCollision(this, block)) {
+          if (velocity.y > 0) {
+            velocity.y = 0;
+            position.y = block.y - hitbox.height - hitbox.offSetY;
+            isOnGround = true;
+            break;
+          }
+          if (velocity.y < 0) {
+            velocity.y = 0;
+            position.y = block.y + block.height - hitbox.offSetY;
+          }
+        }
+      }
+    }
+  }
+
+  void _playerJump(double dt) {
+    velocity.y = -_jumpForce;
+
+    position.y += velocity.y * dt;
+    isOnGround = false;
+    hasJumped = false;
   }
 }
