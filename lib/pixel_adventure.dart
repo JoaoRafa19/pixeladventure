@@ -9,12 +9,14 @@ import 'package:pixeladventure/components/level.dart';
 
 class PixelAdventure extends FlameGame
     with HasKeyboardHandlerComponents, DragCallbacks {
+  PixelAdventure({this.showJoystick = false});
+
   @override
   Color backgroundColor() => const Color(0xFF211F30);
   Player player = Player(character: 'Mask Dude');
   late final CameraComponent cam;
   late JoystickComponent joystick;
-  bool showJoystick = false;
+  final bool showJoystick;
 
   @override
   FutureOr<void> onLoad() async {
@@ -77,6 +79,9 @@ class PixelAdventure extends FlameGame
       case JoystickDirection.upRight:
       case JoystickDirection.downRight:
         player.horizontalMovement = 1;
+        break;
+      case JoystickDirection.up:
+        player.velocity.y -= 460;
         break;
       default:
         player.horizontalMovement = 0;
