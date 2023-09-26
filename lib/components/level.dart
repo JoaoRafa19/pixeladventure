@@ -3,8 +3,11 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 import 'package:pixeladventure/components/background_tile.dart';
-import 'package:pixeladventure/components/collision_block.dart';
+import 'package:pixeladventure/components/objects/collision_block.dart';
+import 'package:pixeladventure/components/objects/fruit.dart';
 import 'package:pixeladventure/components/player.dart';
+
+import 'objects/saw.dart';
 
 class Level extends World with HasGameRef {
   final String levelName;
@@ -52,6 +55,36 @@ class Level extends World with HasGameRef {
           case 'Player':
             player.position = Vector2(spawnPoint.x, spawnPoint.y);
             add(player);
+            break;
+          case 'Fruit':
+            final fruit = Fruit(
+              position: Vector2(spawnPoint.x, spawnPoint.y),
+              fruit: spawnPoint.name,
+            );
+            add(fruit);
+            break;
+          case 'Saw':
+            final isVertical =
+                spawnPoint.properties.getValue<bool?>("isVertical");
+            final offNeg = spawnPoint.properties.getValue<double?>("offNeg");
+            final offPos = spawnPoint.properties.getValue<double?>("offPos");
+            final moveSpeed =
+                spawnPoint.properties.getValue<double?>("moveSpeed");
+            final saw = Saw(
+              position: Vector2(
+                spawnPoint.x,
+                spawnPoint.y,
+              ),
+              size: Vector2(
+                spawnPoint.width,
+                spawnPoint.height,
+              ),
+              isVertical: isVertical,
+              moveSpeed: moveSpeed,
+              offNeg: offNeg,
+              offPos: offPos,
+            );
+            add(saw);
             break;
           default:
         }

@@ -15,8 +15,8 @@
             "scale": 1.5,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 382.3333333333333,
-                "y": 282.66666666666663
+                "x": 324.3333333333333,
+                "y": 281.99999999999994
             }
         },
         "Level_02.tmx": {
@@ -25,14 +25,15 @@
                 3
             ],
             "scale": 1.5,
-            "selectedLayer": 0,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 385,
-                "y": 201.33333333333337
+                "x": 338.3333333333333,
+                "y": 223.99999999999997
             }
         }
     },
     "last.imagePath": "C:/Users/jabir/OneDrive/Dev/Flame/pixeladventure/assets/images/Terrain",
+    "last.objectTemplatePath": "C:/Users/jabir/OneDrive/Dev/Flame/pixeladventure/assets/tiles/Models/Fruits",
     "map.height": 23,
     "map.lastUsedFormat": "tmx",
     "map.tileHeight": 16,
@@ -41,6 +42,7 @@
     "openFiles": [
     ],
     "project": "pixel_adventure.tiled-project",
+    "property.type": "float",
     "recentFiles": [
     ],
     "tileset.lastUsedFormat": "tsx",
