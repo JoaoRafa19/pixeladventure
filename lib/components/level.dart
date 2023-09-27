@@ -3,13 +3,14 @@ import 'dart:async';
 import 'package:flame/components.dart';
 import 'package:flame_tiled/flame_tiled.dart';
 import 'package:pixeladventure/components/background_tile.dart';
+import 'package:pixeladventure/components/objects/checkpoint.dart';
 import 'package:pixeladventure/components/objects/collision_block.dart';
 import 'package:pixeladventure/components/objects/fruit.dart';
-import 'package:pixeladventure/components/player.dart';
+import 'package:pixeladventure/entities/player.dart';
 
 import 'objects/saw.dart';
 
-class Level extends World with HasGameRef {
+class Level extends World {
   final String levelName;
   late TiledComponent level;
   final Player player;
@@ -28,21 +29,14 @@ class Level extends World with HasGameRef {
 
   void _scrollingBackground() {
     final backegroundLayer = level.tileMap.getLayer("Background");
-    const tileSize = 64;
-    final numTilesY = (game.size.y / tileSize).floor();
-    final numTilesX = (game.size.x / tileSize).floor();
 
     if (backegroundLayer != null) {
-      for (double y = 0; y < game.size.y / numTilesY; y++) {
-        for (double x = 0; x < numTilesX; x++) {
-          var value = backegroundLayer.properties.getValue("BackgroundCollor");
-          final backgroundTile = BackgroundTile(
-            color: value ?? 'Gray',
-            position: Vector2(x * tileSize, (y * tileSize) - tileSize),
-          );
-          add(backgroundTile);
-        }
-      }
+      var value = backegroundLayer.properties.getValue("BackgroundCollor");
+      final backgroundTile = BackgroundTile(
+        color: value ?? 'Gray',
+        position: Vector2(0, 0),
+      );
+      add(backgroundTile);
     }
   }
 
@@ -53,7 +47,11 @@ class Level extends World with HasGameRef {
       for (final spawnPoint in spawnPointLayer.objects) {
         switch (spawnPoint.class_) {
           case 'Player':
-            player.position = Vector2(spawnPoint.x, spawnPoint.y);
+            player
+              ..position = Vector2(spawnPoint.x, spawnPoint.y)
+              ..scale.x = 1
+              ..startingPosition = Vector2(spawnPoint.x, spawnPoint.y);
+              
             add(player);
             break;
           case 'Fruit':
@@ -85,6 +83,13 @@ class Level extends World with HasGameRef {
               offPos: offPos,
             );
             add(saw);
+            break;
+          case 'Checkpoint':
+            final checkpoint = Checkpoint(
+              position: Vector2(spawnPoint.x, spawnPoint.y),
+              size: Vector2(spawnPoint.width, spawnPoint.height),
+            );
+            add(checkpoint);
             break;
           default:
         }

@@ -1,32 +1,27 @@
 import 'dart:async';
 
 import 'package:flame/components.dart';
+import 'package:flame/parallax.dart';
+import 'package:flutter/painting.dart';
+import 'package:pixeladventure/pixel_adventure.dart';
 
-class BackgroundTile extends SpriteComponent with HasGameRef {
+class BackgroundTile extends ParallaxComponent<PixelAdventure> {
   final String color;
   BackgroundTile({position, this.color = "Gray"}) : super(position: position);
 
-  final double scroolSpeed = 0.4;
+  final double scroolSpeed = 40;
 
   @override
-  void update(double dt) {
-    position.y += scroolSpeed;
-    double tileSize = 64;
-    int scroolHeight = (game.size.y / tileSize).floor();
-    if (position.y >= scroolHeight * tileSize) {
-      position.y = -tileSize;
-    }
-
-    super.update(dt);
-  }
-
-  @override
-  FutureOr<void> onLoad() {
-    priority = -1;
+  FutureOr<void> onLoad() async {
+    priority = -10;
     size = Vector2.all(64.6);
-    sprite = Sprite(game.images.fromCache(
-        'Background/${color[0].toUpperCase()}${color.substring(1).toLowerCase()}.png'));
-
+    parallax = await game.loadParallax([
+      ParallaxImageData(
+          "Background/${color[0].toUpperCase()}${color.substring(1).toLowerCase()}.png"),
+    ],
+        baseVelocity: Vector2(0, -scroolSpeed),
+        fill: LayerFill.none,
+        repeat: ImageRepeat.repeat);
     return super.onLoad();
   }
 }

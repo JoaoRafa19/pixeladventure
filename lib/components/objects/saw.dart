@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:flame/collisions.dart';
 import 'package:flame/components.dart';
-import 'package:pixeladventure/pixel_adventure.dart';
+import 'package:pixeladventure/components/objects/trap.dart';
 
-class Saw extends SpriteAnimationComponent with HasGameRef<PixelAdventure> {
+class Saw extends Trap {
   final bool? isVertical;
   final double? offNeg;
   final double? offPos;
@@ -35,10 +35,9 @@ class Saw extends SpriteAnimationComponent with HasGameRef<PixelAdventure> {
       rangePos = position.x + offPos! * tileSize;
     }
 
-    debugMode = true;
+    // debugMode = true;
     add(CircleHitbox());
 
-    priority = -1;
     animation = SpriteAnimation.fromFrameData(
       game.images.fromCache("Traps/Saw/On (38x38).png"),
       SpriteAnimationData.sequenced(
