@@ -23,7 +23,7 @@ class PixelAdventure extends FlameGame
   late JoystickComponent joystick;
   late JumpButton jumpbutton;
   final bool showJoystick;
-
+  
   //sounds
   bool playSounds = true;
   double soundVolume = 0.4;

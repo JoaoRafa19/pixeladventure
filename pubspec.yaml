@@ -89,10 +89,10 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
 
-msix_config:
-  display_name: Flutter App
-  publisher_display_name: Company Name
-  identity_name: company.suite.flutterapp
-  msix_version: 1.0.0.0
-  logo_path: ./assets/images/Main Characters/Virtual Guy/Jump (32x32).png
-  capabilities: internetClient, location, microphone, webcam
+# msix_config:
+#   display_name: Flutter App
+#   publisher_display_name: Company Name
+#   identity_name: company.suite.flutterapp
+#   msix_version: 1.0.0.0
+#   logo_path: ./assets/images/Main Characters/Virtual Guy/Jump (32x32).png
+#   capabilities: internetClient, location, microphone, webcam

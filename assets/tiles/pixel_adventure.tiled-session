@@ -5,33 +5,45 @@
     },
     "activeFile": "Level_02.tmx",
     "expandedProjectPaths": [
-        "Models/Fruits",
+        ".",
         "Models",
-        "."
+        "Models/Fruits"
     ],
     "fileStates": {
         "Level_01.tmx": {
             "expandedObjectLayers": [
-                2,
-                3
+                3,
+                2
             ],
             "scale": 1.5,
-            "selectedLayer": 2,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 304.33333333333337,
-                "y": 224.66666666666663
+                "x": 320.33333333333326,
+                "y": 244.66666666666666
             }
         },
         "Level_02.tmx": {
             "expandedObjectLayers": [
-                2,
-                3
+                3,
+                2
             ],
             "scale": 1.563046875,
-            "selectedLayer": 2,
+            "selectedLayer": 0,
             "viewCenter": {
-                "x": 320.2079272254711,
-                "y": 184.25551057130008
+                "x": 314.44994252011804,
+                "y": 65.25715999400211
+            }
+        },
+        "Level_03.tmx": {
+            "expandedObjectLayers": [
+                3,
+                2
+            ],
+            "scale": 1.779765625,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 252.56134498046615,
+                "y": 193.283876914973
             }
         },
         "Pixel Adventure.tsx": {
@@ -52,11 +64,12 @@
         "Level_02.tmx"
     ],
     "project": "pixel_adventure.tiled-project",
-    "property.type": "string",
+    "property.type": "int",
     "recentFiles": [
-        "Level_02.tmx",
+        "Pixel Adventure.tsx",
         "Level_01.tmx",
-        "Pixel Adventure.tsx"
+        "Level_02.tmx",
+        "Level_03.tmx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
