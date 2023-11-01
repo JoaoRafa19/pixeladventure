@@ -64,6 +64,7 @@ class Player extends SpriteAnimationGroupComponent
   bool hasJumped = false;
   bool gotHit = false;
   bool reachedCheckpoint = false;
+  bool isPlayingAudio = false;
 
   @override
   FutureOr<void> onLoad() {
@@ -252,9 +253,17 @@ class Player extends SpriteAnimationGroupComponent
     }
   }
 
+  void playAudio() {
+    if (!isPlayingAudio) {
+      isPlayingAudio = true;
+      FlameAudio.play('sounds/jump.wav', volume: game.soundVolume)
+          .then((value) => isPlayingAudio = false);
+    }
+  }
+
   void _playerJump(double dt) async {
     if (game.playSounds) {
-      await FlameAudio.play('sounds/jump.wav', volume: game.soundVolume);
+      playAudio();
     }
 
     velocity.y = -_jumpForce;
