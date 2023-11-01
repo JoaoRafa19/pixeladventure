@@ -1,9 +1,10 @@
 import 'dart:async';
-
 import 'package:flame/components.dart';
 import 'package:flame/events.dart';
 import 'package:flame/game.dart';
-import 'package:flutter/painting.dart';
+import 'package:flame_audio/flame_audio.dart' as Flame_Audio;
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:pixeladventure/components/misc/jump_button.dart';
 import 'package:pixeladventure/entities/player.dart';
 import 'package:pixeladventure/components/level.dart';
@@ -23,10 +24,13 @@ class PixelAdventure extends FlameGame
   late JoystickComponent joystick;
   late JumpButton jumpbutton;
   final bool showJoystick;
-  
+
   //sounds
-  bool playSounds = true;
+  bool playSounds = false;
   double soundVolume = 0.4;
+  double musicVolume = 0.2;
+
+  late Flame_Audio.AudioPlayer musicPlayer;
 
   //levels
   List<String> levelNames = ['Level_01', 'Level_02'];
@@ -35,6 +39,8 @@ class PixelAdventure extends FlameGame
   @override
   FutureOr<void> onLoad() async {
     await images.loadAllImages(); //<- load all images in cache
+    musicPlayer =
+        await Flame_Audio.FlameAudio.loop('music/01.mp3', volume: musicVolume);
 
     _loadLevel();
 
@@ -102,6 +108,41 @@ class PixelAdventure extends FlameGame
 
     jumpbutton = JumpButton();
     add(jumpbutton);
+  }
+
+  @override
+  KeyEventResult onKeyEvent(
+      RawKeyEvent event, Set<LogicalKeyboardKey> keysPressed) {
+    if (keysPressed.contains(LogicalKeyboardKey.keyP)) {
+      if (musicPlayer.state == Flame_Audio.PlayerState.playing) {
+        musicPlayer.pause();
+      } else {
+        musicPlayer.resume();
+      }
+    }
+
+    if (keysPressed.contains(LogicalKeyboardKey.f9)) {
+      if (musicVolume > 0) {
+        musicVolume -= 0.1;
+        musicPlayer.setVolume(musicVolume);
+      }
+    }
+    if (keysPressed.contains(LogicalKeyboardKey.f10)) {
+      if (musicVolume < 0.5) {
+        musicVolume += 0.1;
+        musicPlayer.setVolume(musicVolume);
+      }
+    }
+
+    if (keysPressed.contains(LogicalKeyboardKey.escape)) {
+      if (paused) {
+        resumeEngine();
+      } else {
+        pauseEngine();
+      }
+    }
+
+    return super.onKeyEvent(event, keysPressed);
   }
 
   void updateJoystick() {
